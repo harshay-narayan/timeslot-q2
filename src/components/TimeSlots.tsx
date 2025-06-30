@@ -9,12 +9,14 @@ function TimeSlots() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Fetch data
   useEffect(() => {
     (async function () {
       try {
+        setLoading(true)
         const response = await fetch("/slots.json");
         const data: TimeSlot[] = await response.json();
         setSlots(data);
@@ -25,6 +27,8 @@ function TimeSlots() {
           setError("Unexpected Error");
         }
         console.error("Failed to load slots:", error);
+      }finally{
+        setLoading(false)
       }
     })();
   }, []);
@@ -78,7 +82,7 @@ function TimeSlots() {
   return (
     <div className="p-4 max-w-lg md:mx-auto mx-2 my-2 rounded-xl bg-[#F9F3EC]">
       <h2 className="text-xl font-bold mb-4">Pick a date</h2>
-      <div className="flex items-center justify-between gap-2">
+      {!loading?<div className="flex items-center justify-between gap-2">
         {/* scroll backward button */}
         <button
           aria-label="scroll back"
@@ -120,7 +124,7 @@ function TimeSlots() {
         >
           <ArrowRight color="#454545" />
         </button>
-      </div>
+      </div>:<div className="animate-spin w-5 h-5 rounded-full border-t-2 mx-auto"></div>}
 
       <div className="mt-10 mb-5">
         <h3 className="text-lg font-semibold">Available Time Slots</h3>
